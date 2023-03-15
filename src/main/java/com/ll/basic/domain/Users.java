@@ -4,25 +4,30 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Getter @Setter
-@RequiredArgsConstructor
-public class User {
+@NoArgsConstructor
+public class Users {
 
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    private String name;
+
+    private int age;
 
     private String username;
 
     private String password;
 
-    public User(String username, String password) {
+    @Builder
+    public Users(String name, int age, String username, String password) {
+        this.name = name;
+        this.age = age;
         this.username = username;
         this.password = password;
     }
