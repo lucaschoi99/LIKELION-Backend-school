@@ -26,30 +26,25 @@ public class UserController {
     private int cnt = 0;
     private int passCnt = 0;
 
-    @GetMapping("/home/addPerson")
+    @GetMapping("/memeber/addPerson")
     public String addPerson(@RequestParam String name, int age) {
-        Users user = Users.builder()
-                .name(name)
-                .age(age)
-                .username("user" + (cnt++))
-                .password("123" + (passCnt++))
-                .build();
+        Users user = createUser("user" + (cnt++), "123" + (passCnt++), name, age);
         userService.addUser(user);
 
         return user.getId() + "번 사람이 추가되었습니다.";
     }
 
-    @GetMapping("/home/addUserList")
-    public void addUsers() {
+    @GetMapping("/")
+    public void initUsers() {
         userService.addUsers();
     }
 
-    @GetMapping("/home/people")
+    @GetMapping("/members")
     public List<Users> getList() {
         return userService.getList();
     }
 
-    @GetMapping("/home/cookie/increase")
+    @GetMapping("/cookie/increase")
     public long addCookie(HttpServletRequest req, HttpServletResponse res) {
 
         long cookieCnt = 0;
@@ -69,20 +64,37 @@ public class UserController {
         return newCount;
     }
 
-    @GetMapping("/member/login")
+    @GetMapping("/login")
     public ResponseLoginUser login(@RequestParam String username, String password, HttpServletResponse res) {
-        Users user = Users.builder()
-                .name("name")
-                .age(20)
+        Users user = createUser(username, password, "name", 20);
+        ResponseLoginUser result = userService.login(user, res);
+
+        if (result.getResultCode().equals("S-1")) {
+            res.addCookie(new Cookie("loginUserName", user.getUsername()));
+        }
+
+        return result;
+    }
+
+    @GetMapping("/login/cookie")
+    public ResponseLoginUser loginWithCookie(@RequestParam String username, String password, HttpServletRequest request) {
+        Users user = createUser(username, password, "name", 20);
+        return userService.loginWithCookie(request, user);
+    }
+
+    private Users createUser(@RequestParam String username, String password, String name, int i) {
+        return Users.builder()
+                .name(name)
+                .age(i)
                 .username(username)
                 .password(password)
                 .build();
-
-        return userService.login(user, res);
     }
 
-    @GetMapping("/member/me")
-    public ResponseLoginUser loginWithCookie(HttpServletRequest request) {
-        return userService.loginWithCookie(request);
+    @GetMapping("/logout")
+    public ResponseLoginUser logout(@RequestParam String username, String password, HttpServletRequest request) {
+        Users user = createUser(username, password, "name", 20);
+        return userService.logout(request, user);
+
     }
 }

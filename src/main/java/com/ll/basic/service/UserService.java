@@ -6,6 +6,7 @@ import com.ll.basic.response.ResponseLoginUser;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -54,20 +56,29 @@ public class UserService {
         } else {
             resultCode = "S-1";
             msg = user.getUsername() + "님 환영합니다.";
-            res.addCookie(new Cookie("username", user.getUsername()));
         }
         return new ResponseLoginUser(resultCode, msg);
     }
 
-    public ResponseLoginUser loginWithCookie(HttpServletRequest req) {
+    public ResponseLoginUser loginWithCookie(HttpServletRequest req, Users user) {
         if (req.getCookies() != null) {
-            String username = Arrays.stream(req.getCookies())
-                    .filter(cookie -> cookie.getName().equals("username"))
-                    .map(cookie -> cookie.getValue().toString())
-                    .findFirst()
-                    .orElseThrow(IllegalAccessError::new);
+            String username = getCookie(req, user).getValue();
             return new ResponseLoginUser("S-1", "당신의 username(은)는 " + username);
         }
         return new ResponseLoginUser("F-1", "로그인 후 이용해주세요.");
+    }
+
+    public ResponseLoginUser logout(HttpServletRequest request, Users user) {
+        if (request.getCookies() != null) {
+            getCookie(request, user).setMaxAge(0);
+        }
+        return new ResponseLoginUser("S-1", "정상적으로 로그아웃 되었습니다.");
+    }
+
+    public Cookie getCookie(HttpServletRequest req, Users user) {
+        return Arrays.stream(req.getCookies())
+                .filter(cookie -> cookie.getName().equals("loginUserName") & cookie.getValue().equals(user.getUsername()))
+                .findFirst()
+                .orElseThrow(IllegalAccessError::new);
     }
 }
