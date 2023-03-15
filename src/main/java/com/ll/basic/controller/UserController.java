@@ -1,16 +1,14 @@
 package com.ll.basic.controller;
 
-import com.ll.basic.domain.Person;
-import com.ll.basic.domain.User;
-import com.ll.basic.repository.BasicRepository;
-import com.ll.basic.Login.Login;
+import com.ll.basic.domain.Users;
 import com.ll.basic.response.ResponseLoginUser;
+import com.ll.basic.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,21 +18,35 @@ import java.util.List;
 
 @RestController
 @Slf4j
-public class BasicController {
+public class UserController {
 
     @Autowired
-    private BasicRepository basicRepository;
+    private UserService userService;
+
+    private int cnt = 0;
+    private int passCnt = 0;
 
     @GetMapping("/home/addPerson")
     public String addPerson(@RequestParam String name, int age) {
-        Person person = new Person(name, age);
-        basicRepository.save(person);
-        return person.getId() + "번 사람이 추가되었습니다.";
+        Users user = Users.builder()
+                .name(name)
+                .age(age)
+                .username("user" + (cnt++))
+                .password("123" + (passCnt++))
+                .build();
+        userService.addUser(user);
+
+        return user.getId() + "번 사람이 추가되었습니다.";
+    }
+
+    @GetMapping("/home/addUserList")
+    public void addUsers() {
+        userService.addUsers();
     }
 
     @GetMapping("/home/people")
-    public List<Person> getList() {
-        return basicRepository.findAll();
+    public List<Users> getList() {
+        return userService.getList();
     }
 
     @GetMapping("/home/cookie/increase")
@@ -58,10 +70,19 @@ public class BasicController {
     }
 
     @GetMapping("/member/login")
-    public ResponseLoginUser login(@RequestParam String username, String password) {
-        User user = new User(username, password);
+    public ResponseLoginUser login(@RequestParam String username, String password, HttpServletResponse res) {
+        Users user = Users.builder()
+                .name("name")
+                .age(20)
+                .username(username)
+                .password(password)
+                .build();
 
-        Login login = new Login();
-        return login.validate(user);
+        return userService.login(user, res);
+    }
+
+    @GetMapping("/member/me")
+    public ResponseLoginUser loginWithCookie(HttpServletRequest request) {
+        return userService.loginWithCookie(request);
     }
 }
