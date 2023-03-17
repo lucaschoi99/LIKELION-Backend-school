@@ -2,7 +2,7 @@ package com.ll.basic.service;
 
 import com.ll.basic.domain.Users;
 import com.ll.basic.repository.UserRepository;
-import com.ll.basic.response.ResponseLoginUser;
+import com.ll.basic.response.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -46,7 +45,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public ResponseLoginUser login(Users user, HttpServletResponse res) {
+    public StatusResponse login(Users user, HttpServletResponse res) {
         if (userRepository.findByUsername(user.getUsername()) == null) {
             resultCode = "F-2";
             msg = user.getUsername() + "(은)는 존재하지 않는 회원입니다.";
@@ -57,22 +56,22 @@ public class UserService {
             resultCode = "S-1";
             msg = user.getUsername() + "님 환영합니다.";
         }
-        return new ResponseLoginUser(resultCode, msg);
+        return new StatusResponse(resultCode, msg);
     }
 
-    public ResponseLoginUser loginWithCookie(HttpServletRequest req, Users user) {
+    public StatusResponse loginWithCookie(HttpServletRequest req, Users user) {
         if (req.getCookies() != null) {
             String username = getCookie(req, user).getValue();
-            return new ResponseLoginUser("S-1", "당신의 username(은)는 " + username);
+            return new StatusResponse("S-1", "당신의 username(은)는 " + username);
         }
-        return new ResponseLoginUser("F-1", "로그인 후 이용해주세요.");
+        return new StatusResponse("F-1", "로그인 후 이용해주세요.");
     }
 
-    public ResponseLoginUser logout(HttpServletRequest request, Users user) {
+    public StatusResponse logout(HttpServletRequest request, Users user) {
         if (request.getCookies() != null) {
             getCookie(request, user).setMaxAge(0);
         }
-        return new ResponseLoginUser("S-1", "정상적으로 로그아웃 되었습니다.");
+        return new StatusResponse("S-1", "정상적으로 로그아웃 되었습니다.");
     }
 
     public Cookie getCookie(HttpServletRequest req, Users user) {

@@ -1,14 +1,13 @@
 package com.ll.basic.controller;
 
 import com.ll.basic.domain.Users;
-import com.ll.basic.response.ResponseLoginUser;
+import com.ll.basic.response.StatusResponse;
 import com.ll.basic.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,9 +64,9 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseLoginUser login(@RequestParam String username, String password, HttpServletResponse res) {
+    public StatusResponse login(@RequestParam String username, String password, HttpServletResponse res) {
         Users user = createUser(username, password, "name", 20);
-        ResponseLoginUser result = userService.login(user, res);
+        StatusResponse result = userService.login(user, res);
 
         if (result.getResultCode().equals("S-1")) {
             res.addCookie(new Cookie("loginUserName", user.getUsername()));
@@ -77,7 +76,7 @@ public class UserController {
     }
 
     @GetMapping("/login/cookie")
-    public ResponseLoginUser loginWithCookie(@RequestParam String username, String password, HttpServletRequest request) {
+    public StatusResponse loginWithCookie(@RequestParam String username, String password, HttpServletRequest request) {
         Users user = createUser(username, password, "name", 20);
         return userService.loginWithCookie(request, user);
     }
@@ -92,7 +91,7 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public ResponseLoginUser logout(@RequestParam String username, String password, HttpServletRequest request) {
+    public StatusResponse logout(@RequestParam String username, String password, HttpServletRequest request) {
         Users user = createUser(username, password, "name", 20);
         return userService.logout(request, user);
 
