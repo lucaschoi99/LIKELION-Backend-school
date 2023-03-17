@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class ResponseLoginUser {
+public class StatusResponse {
 
     private String resultCode;
     private String msg;
 
-    public ResponseLoginUser(String resultCode, String msg) {
+    public StatusResponse(String resultCode, String msg) {
         this.resultCode = resultCode;
         this.msg = msg;
     }
