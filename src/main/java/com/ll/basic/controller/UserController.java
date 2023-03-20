@@ -33,11 +33,6 @@ public class UserController {
         return user.getId() + "번 사람이 추가되었습니다.";
     }
 
-    @GetMapping("/")
-    public void initUsers() {
-        userService.addUsers();
-    }
-
     @GetMapping("/members")
     public List<Users> getList() {
         return userService.getList();

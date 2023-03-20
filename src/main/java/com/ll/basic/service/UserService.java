@@ -9,9 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,13 +29,26 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void addUsers() {
-        userRepository.saveAll(IntStream.rangeClosed(1, 10)
-                .mapToObj(i -> Users.builder()
-                        .name("name" + i)
-                        .age(10 + i)
-                        .username("user" + i)
-                        .password("123" + i)
+        Map<String, String> newUsers = new HashMap();
+        newUsers.put("user1", "1234");
+        newUsers.put("abc", "12345");
+        newUsers.put("test", "12346");
+        newUsers.put("love", "12347");
+        newUsers.put("like", "12348");
+        newUsers.put("giving", "12349");
+        newUsers.put("thanks", "123410");
+        newUsers.put("hello", "123411");
+        newUsers.put("good", "123412");
+        newUsers.put("peace", "123413");
+
+        userRepository.saveAll(newUsers.entrySet().stream()
+                .map(e -> Users.builder()
+                        .name(e.getKey())
+                        .age(20)
+                        .username(e.getKey())
+                        .password(e.getValue())
                         .build())
                 .collect(Collectors.toList())
         );
