@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choi's 블로그</title>
+
+    <!-- 제이쿼리 -->
+    <!-- js 쉽게 만들어 줌 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <!-- css 디자인 쉽게 만들어 줌 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+    <!-- 신택스 하이라이터 플러그인 라이브러리 시작 -->
+    <link rel="stylesheet"
+          href="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.css">
+    <script
+            src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <!-- 신택스 하이라이터 플러그인 라이브러리 끝 -->
+
+    <!-- katex 플러그인 라이브러리 시작 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.css">
+    <!-- katex 플러그인 라이브러리 끝 -->
+
+    <!-- uml 플러그인 라이브러리 시작 -->
+    <script src="https://uicdn.toast.com/editor-plugin-uml/latest/toastui-editor-plugin-uml.min.js"></script>
+    <!-- uml 플러그인 라이브러리 끝 -->
+
+    <style>
+        body {
+            margin: 0;
+        }
+
+        @font-face {
+            font-family: "GmarketSansMedium";
+            src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff") format("woff");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        #viewer-1 {
+            padding: 0 10px;
+        }
+
+        html>body,
+        html>body .toastui-editor-contents,
+        html>body .toastui-editor-contents code,
+        html>body .toastui-editor-contents pre {
+            font-family: "GmarketSansMedium";
+            text-underline-position: under;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="page-head text-3xl font-bold p-2">
+    <span class="current-page-no text-lg"></span>
+    <span class="current-page-subject"></span>
+    <span class="current-page-createDate text-lg"></span>
+</div>
+
+<div id="viewer-1">
+</div>
+
+<ul class="list">
+    <li>
+        <a href="javascript:;" onclick="showPage(this);" class="block p-2 hover:text-red-500 flex gap-2">
+            <span class="data-id-5">5</span>
+            <span class="mr-auto underline">DB SELECT 문 예시</span>
+            <span>2023-03-08</span>
+        </a>
+    </li>
+    <li>
+        <a href="javascript:;" onclick="showPage(this);" class="block p-2 hover:text-red-500 flex gap-2">
+            <span class="data-id-4">4</span>
+            <span class="mr-auto underline">uml 예시</span>
+            <span>2023-03-07</span>
+        </a>
+    </li>
+    <li>
+        <a href="javascript:;" onclick="showPage(this);" class="block p-2 hover:text-red-500 flex gap-2">
+            <span class="data-id-3">3</span>
+            <span class="mr-auto underline">HTML 기초</span>
+            <span>2023-03-07</span>
+        </a>
+    </li>
+    <li>
+        <a href="javascript:;" onclick="showPage(this);" class="block p-2 hover:text-red-500 flex gap-2">
+            <span class="data-id-2">2</span>
+            <span class="mr-auto underline">CSS 기초</span>
+            <span>2023-03-07</span>
+        </a>
+    </li>
+    <li>
+        <a href="javascript:;" onclick="showPage(this);" class="block p-2 hover:text-red-500 flex gap-2">
+            <span class="data-id-1">1</span>
+            <span class="mr-auto underline">JAVA 기초</span>
+            <span>2023-03-07</span>
+        </a>
+    </li>
+</ul>
+
+<script>
+    const Editor = toastui.Editor;
+
+    function katexPlugin() {
+        const toHTMLRenderers = {
+            katex(node) {
+                console.log("HI");
+                let html = katex.renderToString(node.literal, {
+                    throwOnError: false
+                });
+
+                return [{
+                    type: "openTag",
+                    tagName: "div",
+                    outerNewLine: true
+                },
+                    {
+                        type: "html",
+                        content: html
+                    },
+                    {
+                        type: "closeTag",
+                        tagName: "div",
+                        outerNewLine: true
+                    }
+                ];
+            }
+        };
+        return {
+            toHTMLRenderers
+        };
+    }
+
+    const viewer1MarkdownSource = "로딩중...";
+
+    const viewer1 = Editor.factory({
+        el: document.querySelector("#viewer-1"),
+        viewer: true,
+        initialValue: viewer1MarkdownSource,
+        plugins: [
+            [toastui.Editor.plugin.codeSyntaxHighlight, {
+                highlighter: Prism
+            }],
+            katexPlugin,
+            [
+                toastui.Editor.plugin.uml,
+                {
+                    rendererURL: "http://www.plantuml.com/plantuml/svg/"
+                }
+            ]
+        ]
+    });
+
+    function showPage(el) {
+        $(el).addClass('text-red-500');
+        $(el).parent().siblings().find(' > a').removeClass('text-red-500');
+
+        const pageNo = $(el).find(' > span:first-child').text();
+        const subject = $(el).find(' > span:nth-child(2)').text();
+        const createDate = $(el).find(' > span:nth-child(3)').text();
+
+        $('.current-page-no').html(pageNo);
+        $('.current-page-subject').html(subject);
+        $('.current-page-createDate').html(createDate);
+
+        fetch(pageNo + ".md")
+            .then(response => response.text()) // 응답에서 본문만 취한다.
+            .then(text => {
+                viewer1.setMarkdown(text);
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            })
+    }
+
+    const params = new URL(document.location).searchParams;
+    const paramId = params.get("id");
+
+    if ($('.data-id-' + paramId).length == 1) {
+        $('.data-id-' + paramId).parent().click();
+    } else {
+        $('.list > li:first-child > a').click();
+    }
+</script>
+
+</body>
+
+</html>
